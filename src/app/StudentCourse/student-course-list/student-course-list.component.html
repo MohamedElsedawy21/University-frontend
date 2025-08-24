@@ -1,0 +1,60 @@
+<div class="student-course-list-container">
+  <h2>Student Courses</h2>
+
+  <table *ngIf="studentCourses.length > 0; else noStudentCourses">
+    <thead>
+      <tr>
+        <th>Student ID</th>
+        <th>Student Name</th>
+        <th>Course ID</th>
+        <th>Course Name</th>
+        <th>Grade</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let sc of studentCourses">
+        <td>{{ sc.studentId }}</td>
+        <td>{{ sc.studentName }}</td>
+        <td>{{ sc.courseId }}</td>
+        <td>{{ sc.courseName }}</td>
+        <td>{{ sc.grade }}</td>
+        <td class="actions">
+          <button type="button" (click)="openUpdateForm(sc)">Update</button>
+          <button type="button" (click)="confirmDelete(sc)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Update Modal -->
+  <div class="modal" *ngIf="showUpdateModal">
+    <div class="modal-content">
+      <span class="close" (click)="closeUpdateForm()">&times;</span>
+      <h2>Update Student Course</h2>
+
+      <form [formGroup]="updateForm" (ngSubmit)="submitUpdate()">
+        <div class="form-field">
+          <label for="studentId">Student ID:</label>
+          <input id="studentId" type="number" formControlName="studentId" />
+        </div>
+
+        <div class="form-field">
+          <label for="courseId">Course ID:</label>
+          <input id="courseId" type="number" formControlName="courseId" />
+        </div>
+
+        <div class="form-field">
+          <label for="grade">Grade:</label>
+          <input id="grade" type="number" formControlName="grade" />
+        </div>
+
+        <button type="submit" [disabled]="updateForm.invalid">Update</button>
+      </form>
+    </div>
+  </div>
+
+  <ng-template #noStudentCourses>
+    <p>No student courses available.</p>
+  </ng-template>
+</div>

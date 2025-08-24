@@ -1,0 +1,14 @@
+<div class="faculty-form-container">
+  <h2>Add Faculty</h2>
+
+  <form [formGroup]="facultyForm" (ngSubmit)="onSubmit()">
+
+    <div class="form-field">
+      <label for="facultyName">Faculty Name:</label>
+      <input id="facultyName" type="text" formControlName="facultyName" />
+    </div>
+
+    <button type="submit" [disabled]="facultyForm.invalid">Submit</button>
+  </form>
+</div>
+

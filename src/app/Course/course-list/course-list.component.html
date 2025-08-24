@@ -1,0 +1,52 @@
+<div class="course-list-container">
+  <h2>Course List</h2>
+
+  <table *ngIf="courses.length > 0; else noCourses">
+    <thead>
+      <tr>
+        <th>Course ID</th>
+        <th>Course Name</th>
+        <th>Faculty ID</th>
+        <th>Faculty Name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let course of courses">
+        <td>{{ course.courseId }}</td>
+        <td>{{ course.courseName }}</td>
+        <td>{{ course.facultyId }}</td>
+        <td>{{ course.facultyName }}</td>
+        <td class="actions">
+          <button type="button" (click)="openUpdateForm(course)">Update</button>
+          <button type="button" (click)="confirmDelete(course)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="modal" *ngIf="showUpdateModal">
+    <div class="modal-content">
+      <span class="close" (click)="closeUpdateForm()">&times;</span>
+      <h2>Update Course</h2>
+
+      <form [formGroup]="updateForm" (ngSubmit)="submitUpdate()">
+        <div class="form-field">
+          <label for="courseName">Course Name:</label>
+          <input id="courseName" type="text" formControlName="courseName" />
+        </div>
+
+        <div class="form-field">
+          <label for="facultyId">Faculty ID:</label>
+          <input id="facultyId" type="number" formControlName="facultyId" />
+        </div>
+
+        <button type="submit" [disabled]="updateForm.invalid">Update</button>
+      </form>
+    </div>
+  </div>
+
+  <ng-template #noCourses>
+    <p>No courses available.</p>
+  </ng-template>
+</div>

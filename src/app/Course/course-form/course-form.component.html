@@ -1,0 +1,18 @@
+<div class="course-form-container">
+  <h2>Add Course</h2>
+
+  <form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+
+    <div class="form-field">
+      <label for="courseName">Course Name:</label>
+      <input id="courseName" type="text" formControlName="courseName" />
+    </div>
+
+    <div class="form-field">
+      <label for="facultyId">Faculty ID:</label>
+      <input id="facultyId" type="number" formControlName="facultyId" />
+    </div>
+
+    <button type="submit" [disabled]="courseForm.invalid">Submit</button>
+  </form>
+</div>
