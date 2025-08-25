@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { Faculty } from '../../Faculty/faculty.model';
 import { FacultyService } from '../../Faculty/faculty.service';
 
@@ -9,10 +10,10 @@ import { FacultyService } from '../../Faculty/faculty.service';
   styleUrls: ['./faculty-list.component.scss']
 })
 export class FacultyListComponent implements OnInit {
-  faculties: Faculty[] = [];
-  showUpdateModal = false;        
+  faculties$!: Observable<Faculty[]>;   
+  showUpdateModal = false;           
   updateForm!: FormGroup;        
-  selectedFacultyId?: number;
+  selectedFaculty?: Faculty;         
 
   constructor(
     private facultyService: FacultyService,
@@ -20,65 +21,38 @@ export class FacultyListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadFaculties();
-    this.facultyService.loadFaculties();
+    this.faculties$ = this.facultyService.getFaculties();
+    this.facultyService.loadFaculties().subscribe();
   }
 
-  loadFaculties(): void {
-    this.facultyService.getFaculties().subscribe({
-      next: (data) => {
-        this.faculties = data;
-      },
-      error: (err) => {
-        console.error('Error fetching faculties:', err);
-      }
-    });
-  }
-
- 
   openUpdateForm(faculty: Faculty): void {
-    this.selectedFacultyId = faculty.facultyId;
+    this.selectedFaculty = faculty; 
     this.updateForm = this.fb.group({
       facultyName: [faculty.facultyName, Validators.required]
     });
     this.showUpdateModal = true;
   }
 
-  
   closeUpdateForm(): void {
     this.showUpdateModal = false;
   }
 
-  
   submitUpdate(): void {
-    if (this.updateForm.valid && this.selectedFacultyId) {
-      const updatedFaculty: Faculty = this.updateForm.value;
+    if (this.selectedFaculty && this.updateForm.valid) {
+      const updatedFaculty: Faculty = {
+        ...this.selectedFaculty,
+        ...this.updateForm.value
+      };
 
-      this.facultyService.updateFaculty(this.selectedFacultyId, updatedFaculty).subscribe({
-        next: (response) => {
-          console.log('Faculty updated successfully:', response);
-          this.loadFaculties(); 
-          this.closeUpdateForm();
-        },
-        error: (err) => {
-          console.error('Error updating faculty:', err);
-        }
+      this.facultyService.updateFaculty(updatedFaculty).subscribe(() => {
+        this.closeUpdateForm();
       });
     }
   }
 
- 
   confirmDelete(faculty: Faculty): void {
-    if (faculty.facultyId && confirm(`Are you sure you want to delete faculty "${faculty.facultyName}"?`)) {
-      this.facultyService.deleteFaculty(faculty.facultyId).subscribe({
-        next: () => {
-          console.log(`Faculty with ID ${faculty.facultyId} deleted successfully`);
-          this.faculties = this.faculties.filter(f => f.facultyId !== faculty.facultyId);
-        },
-        error: (err) => {
-          console.error('Error deleting faculty:', err);
-        }
-      });
+    if (confirm(`Are you sure you want to delete ${faculty.facultyName}?`)) {
+      this.facultyService.deleteFaculty(faculty.facultyId!).subscribe();
     }
   }
 }

@@ -1,7 +1,7 @@
 <div class="course-list-container">
   <h2>Course List</h2>
 
-  <table *ngIf="courses.length > 0; else noCourses">
+  <table *ngIf="(courses$ | async) as courses; else noCourses">
     <thead>
       <tr>
         <th>Course ID</th>

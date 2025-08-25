@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { Course } from '../../Course/course.model';
 import { CourseService } from '../../Course/course.service';
 
@@ -9,10 +10,10 @@ import { CourseService } from '../../Course/course.service';
   styleUrls: ['./course-list.component.scss']
 })
 export class CourseListComponent implements OnInit {
-  courses: Course[] = [];
+  courses$!: Observable<Course[]>;  
   showUpdateModal = false;
   updateForm!: FormGroup;
-  selectedCourseId?: number;
+  selectedCourse?: Course;      
 
   constructor(
     private courseService: CourseService,
@@ -20,22 +21,12 @@ export class CourseListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadCourses();
-  }
-
-  loadCourses(): void {
-    this.courseService.getCourses().subscribe({
-      next: (data) => {
-        this.courses = data;
-      },
-      error: (err) => {
-        console.error('Error fetching courses:', err);
-      }
-    });
+    this.courses$ = this.courseService.courses$; 
+    this.courseService.loadCourses().subscribe(); 
   }
 
   openUpdateForm(course: Course): void {
-    this.selectedCourseId = course.courseId;
+    this.selectedCourse = course;
     this.updateForm = this.fb.group({
       courseName: [course.courseName, Validators.required],
       facultyId: [course.facultyId, Validators.required]
@@ -48,16 +39,15 @@ export class CourseListComponent implements OnInit {
   }
 
   submitUpdate(): void {
-    if (this.updateForm.valid && this.selectedCourseId) {
+    if (this.updateForm.valid && this.selectedCourse) {
       const updatedCourse: Course = {
-        ...this.updateForm.value,
-        courseId: this.selectedCourseId
+        ...this.selectedCourse,
+        ...this.updateForm.value
       };
 
-      this.courseService.updateCourse(this.selectedCourseId, updatedCourse).subscribe({
-        next: (response) => {
-          console.log('Course updated successfully:', response);
-          this.loadCourses();
+      this.courseService.updateCourse(updatedCourse).subscribe({
+        next: () => {
+          console.log('Course updated successfully');
           this.closeUpdateForm();
         },
         error: (err) => {
@@ -72,7 +62,6 @@ export class CourseListComponent implements OnInit {
       this.courseService.deleteCourse(course.courseId).subscribe({
         next: () => {
           console.log(`Course with ID ${course.courseId} deleted successfully`);
-          this.courses = this.courses.filter(c => c.courseId !== course.courseId);
         },
         error: (err) => {
           console.error('Error deleting course:', err);

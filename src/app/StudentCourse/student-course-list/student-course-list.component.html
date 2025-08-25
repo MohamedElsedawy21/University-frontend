@@ -1,7 +1,7 @@
 <div class="student-course-list-container">
   <h2>Student Courses</h2>
 
-  <table *ngIf="studentCourses.length > 0; else noStudentCourses">
+  <table *ngIf="studentCourses$ | async as studentCourses; else noStudentCourses">
     <thead>
       <tr>
         <th>Student ID</th>
@@ -27,7 +27,6 @@
     </tbody>
   </table>
 
-  <!-- Update Modal -->
   <div class="modal" *ngIf="showUpdateModal">
     <div class="modal-content">
       <span class="close" (click)="closeUpdateForm()">&times;</span>

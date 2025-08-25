@@ -9,10 +9,10 @@ import { StudentService } from '../../Student/student.service';
   styleUrls: ['./student-list.component.scss']
 })
 export class StudentListComponent implements OnInit {
-  students: Student[] = [];
-  showUpdateModal = false;        
-  updateForm!: FormGroup;        
-  selectedStudentId?: number;    
+  students$ = this.studentService.students$;
+  showUpdateModal = false;
+  updateForm!: FormGroup;
+  selectedStudentId?: number;
 
   constructor(
     private studentService: StudentService,
@@ -20,26 +20,15 @@ export class StudentListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadStudents();
-  }
-
-  loadStudents(): void {
-    this.studentService.getStudents().subscribe({
-      next: (data) => {
-        this.students = data;
-      },
-      error: (err) => {
-        console.error('Error fetching students:', err);
-      }
-    });
+    this.studentService.loadStudents();
   }
 
   openUpdateForm(student: Student): void {
     this.selectedStudentId = student.studentId;
     this.updateForm = this.fb.group({
       studentName: [student.studentName, Validators.required],
-      level: student.level,
-      facultyId: student.facultyId
+      level: [student.level, Validators.required],
+      facultyId: [student.facultyId, Validators.required]
     });
     this.showUpdateModal = true;
   }
@@ -55,7 +44,6 @@ export class StudentListComponent implements OnInit {
       this.studentService.updateStudent(this.selectedStudentId, updatedStudent).subscribe({
         next: () => {
           console.log('Student updated successfully');
-          this.loadStudents();
           this.closeUpdateForm();
         },
         error: (err) => {
@@ -68,13 +56,8 @@ export class StudentListComponent implements OnInit {
   confirmDelete(student: Student): void {
     if (student.studentId && confirm(`Are you sure you want to delete student "${student.studentName}"?`)) {
       this.studentService.deleteStudent(student.studentId).subscribe({
-        next: () => {
-          console.log(`Student with ID ${student.studentId} deleted successfully`);
-          this.students = this.students.filter(s => s.studentId !== student.studentId);
-        },
-        error: (err) => {
-          console.error('Error deleting student:', err);
-        }
+        next: () => console.log(`Student with ID ${student.studentId} deleted successfully`),
+        error: (err) => console.error('Error deleting student:', err),
       });
     }
   }

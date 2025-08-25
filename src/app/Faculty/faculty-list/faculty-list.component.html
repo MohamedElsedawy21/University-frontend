@@ -1,41 +1,43 @@
 <div class="faculty-list-container">
   <h2>Faculty List</h2>
 
-  <table *ngIf="faculties.length > 0; else noFaculties">
-    <thead>
-      <tr>
-        <th>Faculty ID</th>
-        <th>Faculty Name</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let faculty of faculties">
-        <td>{{ faculty.facultyId }}</td>
-        <td>{{ faculty.facultyName }}</td>
-        <td class="actions">
-          <button type="button" (click)="openUpdateForm(faculty)">Update</button>
-          <button type="button" (click)="confirmDelete(faculty)">Delete</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="modal" *ngIf="showUpdateModal">
-  <div class="modal-content">
-    <span class="close" (click)="closeUpdateForm()">&times;</span>
-    <h2>Update Faculty</h2>
+  <ng-container *ngIf="faculties$ | async as faculties; else noFaculties">
+    <table *ngIf="faculties.length > 0">
+      <thead>
+        <tr>
+          <th>Faculty ID</th>
+          <th>Faculty Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let faculty of faculties">
+          <td>{{ faculty.facultyId }}</td>
+          <td>{{ faculty.facultyName }}</td>
+          <td class="actions">
+            <button type="button" (click)="openUpdateForm(faculty)">Update</button>
+            <button type="button" (click)="confirmDelete(faculty)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="modal" *ngIf="showUpdateModal">
+      <div class="modal-content">
+        <span class="close" (click)="closeUpdateForm()">&times;</span>
+        <h2>Update Faculty</h2>
 
-    <form [formGroup]="updateForm" (ngSubmit)="submitUpdate()">
-      <div class="form-field">
-        <label for="facultyName">Faculty Name:</label>
-        <input id="facultyName" type="text" formControlName="facultyName" />
+        <form [formGroup]="updateForm" (ngSubmit)="submitUpdate()">
+          <div class="form-field">
+            <label for="facultyName">Faculty Name:</label>
+            <input id="facultyName" type="text" formControlName="facultyName" />
+          </div>
+
+          <button type="submit" [disabled]="updateForm.invalid">Update</button>
+        </form>
       </div>
-
-      <button type="submit" [disabled]="updateForm.invalid">Update</button>
-    </form>
-  </div>
-</div>
-
+    </div>
+  </ng-container>
 
   <ng-template #noFaculties>
     <p>No faculties available.</p>
