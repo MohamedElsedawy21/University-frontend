@@ -8,7 +8,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './home/home.component';
 import { CourseModule } from './Course/course.module';
 import { StudentCourseModule } from './StudentCourse/studentCourse.module';
-
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './Security/auth.interceptor';
+import { AuthModule } from './Security/auth.module';
 @NgModule({
   declarations: [
     AppComponent,
@@ -20,10 +22,13 @@ import { StudentCourseModule } from './StudentCourse/studentCourse.module';
     FacultyModule,
     StudentModule,
     CourseModule,  
-    StudentCourseModule,      
+    StudentCourseModule,
+    AuthModule,
     HttpClientModule       
   ],
-  providers: [],
+  providers: [
+  { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -13,7 +13,7 @@ export class CourseComponent implements OnInit {
   ngOnInit(): void {
   }
   goHome(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/home']);
   }
 
 }

@@ -10,6 +10,6 @@ export class StudentComponent {
   constructor(private router: Router) {}
 
   goHome(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/home']);
   }
 }

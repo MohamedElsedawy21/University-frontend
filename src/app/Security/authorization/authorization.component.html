@@ -1,0 +1,26 @@
+<div class="auth-wrapper">
+  <div class="auth-container">
+    <h2>{{ showLogin ? 'Login' : 'Register' }}</h2>
+
+    <!-- Alert -->
+    <div *ngIf="alertMessage" class="alert" [ngClass]="alertType">
+      {{ alertMessage }}
+    </div>
+
+    <!-- Login Form -->
+    <form *ngIf="showLogin" [formGroup]="loginForm" (ngSubmit)="login()">
+      <input formControlName="username" placeholder="Username" />
+      <input type="password" formControlName="password" placeholder="Password" />
+      <button type="submit">Login</button>
+      <p class="toggle" (click)="toggleForm()">Don’t have an account? Register</p>
+    </form>
+
+    <!-- Register Form -->
+    <form *ngIf="!showLogin" [formGroup]="registerForm" (ngSubmit)="register()">
+      <input formControlName="username" placeholder="Username" />
+      <input type="password" formControlName="password" placeholder="Password" />
+      <button type="submit">Register</button>
+      <p class="toggle" (click)="toggleForm()">Already have an account? Login</p>
+    </form>
+  </div>
+</div>
